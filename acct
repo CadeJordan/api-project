@@ -1,0 +1,23 @@
+import fire
+from riotwatcher import ValWatcher, LolWatcher
+
+riot_api_key = 'RGAPI-262172ac-c2c4-43cc-9f4c-83cc8e0e0ee2'
+
+val_watcher = ValWatcher(riot_api_key)
+lol_watcher = LolWatcher(riot_api_key)
+
+
+tagline = 'NA1'
+region = 'na1'
+
+def name(player_name):
+    # player_name = input()
+    me = lol_watcher.summoner.by_name(region, player_name)
+    print(me)
+
+
+# matchlist = val_watcher.match.matchlist_by_puuid(region, me.get('puuid'))
+# print(matchlist)
+
+if __name__ == '__main__':
+    fire.Fire(name)

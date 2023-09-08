@@ -1,0 +1,42 @@
+import fire
+from riotwatcher import TftWatcher, LolWatcher
+
+riot_api_key = 'RGAPI-262172ac-c2c4-43cc-9f4c-83cc8e0e0ee2'
+
+tft_watcher = TftWatcher(riot_api_key)
+lol_watcher = LolWatcher(riot_api_key)
+
+
+tagline = 'NA1'
+region = 'na1'
+
+count = int(20)
+start = int(0)
+
+placements = []
+
+
+def match_hist(player_name):
+    me = lol_watcher.summoner.by_name(region, player_name)
+    print(me)
+    puuid = me.get('puuid')
+    match_list = tft_watcher.match.by_puuid(region, puuid, count, start)
+    print(match_list)
+    # game = tft_watcher.match.by_id(region, match_list[0])
+    # print(game)
+    placements = []
+    match_index = int(0)
+    while match_index < 5:
+        game_stats = tft_watcher.match.by_id(region, match_list[match_index])
+        placement = game_stats.get('placement')
+        placements.append(placement)
+        match_index += 1
+    print("This player's recent 5 placements are", placements)
+
+
+
+
+
+
+if __name__ == '__main__':
+    fire.Fire(match_hist)

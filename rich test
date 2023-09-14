@@ -1,0 +1,6 @@
+from rich import print
+
+print("Hello, [bold magenta]World[/bold magenta]!", ":vampire:", locals())
+
+from rich import pretty
+pretty.install()

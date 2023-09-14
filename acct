@@ -1,7 +1,9 @@
 import fire
 from riotwatcher import ValWatcher, LolWatcher
+from rich import print
+from rich import pretty
 
-riot_api_key = 'RGAPI-262172ac-c2c4-43cc-9f4c-83cc8e0e0ee2'
+riot_api_key = 'RGAPI-4edd87ad-83a7-46b0-b46d-7f1e7028e147'
 
 val_watcher = ValWatcher(riot_api_key)
 lol_watcher = LolWatcher(riot_api_key)
@@ -13,7 +15,7 @@ region = 'na1'
 def name(player_name):
     # player_name = input()
     me = lol_watcher.summoner.by_name(region, player_name)
-    print(me)
+    print(me, ":raccoon:")
 
 
 # matchlist = val_watcher.match.matchlist_by_puuid(region, me.get('puuid'))

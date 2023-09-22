@@ -1,0 +1,84 @@
+import fire
+from riotwatcher import TftWatcher, LolWatcher
+from rich import print
+from rich import pretty
+from rich.console import Console
+from rich.table import Table
+
+riot_api_key = 'RGAPI-61a39c99-d8a7-4d43-91be-88c52b5abfbf'
+
+tft_watcher = TftWatcher(riot_api_key)
+lol_watcher = LolWatcher(riot_api_key)
+
+
+tagline = 'NA1'
+region = 'na1'
+
+count = int(20)
+start = int(0)
+
+placements = []
+tier_list = []
+unit_list = []
+
+table = Table(title = 'Player Match Stats')
+table.add_column("Player", style="cyan", no_wrap=True)
+table.add_column("Placements", style="magenta")
+table.add_column("Top Synergies", style="green")
+table.add_column("Top Units", style="red" )
+
+
+def match_hist(player_name1):
+    me = lol_watcher.summoner.by_name(region, player_name1)
+    puuid = me.get('puuid')
+    match_list = tft_watcher.match.by_puuid(region, puuid, count, start)
+    
+    match_index = start
+    while match_index < 5:
+        game_stats = tft_watcher.match.by_id(region, match_list[match_index])
+        info_dict = game_stats.get('info')
+        participant_list = info_dict.get('participants')
+        metadata = game_stats.get('metadata')
+        puuid_list = metadata.get("participants")
+        player_number = 0
+        for index, player in enumerate(puuid_list):
+            if player == puuid:
+                player_number = index
+                break
+        place = participant_list[player_number].get('placement')
+        placements.append(str(place))
+
+        max_units = int(-1)
+        most_used_syn = "none"
+        synergies = participant_list[player_number].get('traits')
+        for syn in synergies:
+            num_units = syn["num_units"]
+            if num_units > max_units:
+                max_units = num_units
+                most_used_syn = syn
+            sum = most_used_syn.get("name", "num_units")
+        tier_list.append(sum)
+
+        champions = participant_list[player_number].get('units')
+        for champ in champions:
+            items = champ["itemNames"]
+            if len(items) == 3:
+                unit_list.append(champ.get("character_id"))
+
+
+        match_index += 1
+    
+
+    place_str = " ".join(placements)
+    synergies_str = ", ".join(tier_list)
+    units_str = ", ".join(unit_list)
+    
+    table.add_row(player_name1, place_str, synergies_str, units_str)
+
+    console = Console()
+    console.print(table)
+
+
+
+if __name__ == '__main__':
+    fire.Fire(match_hist)
